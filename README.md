@@ -1,5 +1,8 @@
 # CORE: Cognitive Replay Against Catastrophic Forgetting In Continual Learning With Cognitive Strategies
 
+## Framwork
+![image](figures/pipline.png)
+
 This is a PyTorch implementation of the **CORE**
 
 
