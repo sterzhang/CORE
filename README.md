@@ -1,4 +1,4 @@
-# CORE: Cognitive Replay Against Catastrophic Forgetting In Continual Learning With Cognitive Strategies
+# CORE: Mitigating Catastrophic Forgetting in Continual Learning through Cognitive Replay
 
 ## Framwork
 ![image](figures/pipline.png)
