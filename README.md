@@ -1,6 +1,6 @@
 # CORE: Mitigating Catastrophic Forgetting in Continual Learning through Cognitive Replay
 
-## Framwork
+## Framework
 ![image](figures/pipline.png)
 
 This is a PyTorch implementation of the **CORE**
@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 
 
-## Demos
+## Run
 ```bash
 python main.py --replay=buffer --target=True
 ```
