@@ -440,7 +440,7 @@ def train_cl(args, config, model, train_datasets, test_datasets, iters=2000, bat
             forgetting_measure.append(forgetting_measure_context)
 
         average_accs = sum(accs) / context
-        print('=> average accuracy over all {} contexts: {:.4f}\n\n'.format(context, average_accs))
+        # print('=> average accuracy over all {} contexts: {:.4f}\n\n'.format(context, average_accs))
         logging.info('=> average accuracy over all {} contexts: {:.4f}\n\n'.format(context, average_accs))
 
         forgetting_measure = [i * 5 for i in forgetting_measure]
@@ -448,15 +448,14 @@ def train_cl(args, config, model, train_datasets, test_datasets, iters=2000, bat
         forgetting_measure_tensor = torch.tensor(forgetting_measure, dtype=torch.float32) 
         softmax_values = torch.nn.functional.softmax(forgetting_measure_tensor, dim=0).numpy() 
 
-        # 设定下限
-        # lamda = 5
-        # threshold = 1 / (lamda * context)
-        # softmax_values_less = np.where(softmax_values < threshold)[0]
-        # softmax_values_more = np.where(softmax_values >= threshold)[0]
-        # softmax_values[softmax_values_less] = threshold
-        # softmax_values[softmax_values_more] = softmax_values[softmax_values_more] / softmax_values[softmax_values_more].sum()
+        # Space Repetition
+        lamda = 5
+        threshold = 1 / (lamda * context)
+        softmax_values_less = np.where(softmax_values < threshold)[0]
+        softmax_values_more = np.where(softmax_values >= threshold)[0]
+        softmax_values[softmax_values_less] = threshold
+        softmax_values[softmax_values_more] = softmax_values[softmax_values_more] / softmax_values[softmax_values_more].sum()
 
-        print(model.budget_per_class*len(train_datasets))
         last_acc = accs
         # MEMORY BUFFER: update the memory buffer
         if target == True:
@@ -466,24 +465,24 @@ def train_cl(args, config, model, train_datasets, test_datasets, iters=2000, bat
             model.memory_sets=[]
             new_classes = list(range(model.classes_per_context*context))
             # print(new_classes)
-            # =================聚类图==================
-            features = []
-            labels = []
-            for class_id in new_classes:
-                class_dataset = SubDataset(original_dataset=train_datasets[int(class_id/model.classes_per_context)], sub_labels=[class_id])
-                features_class = model.class_features(class_dataset).numpy()
-                features.append(features_class)
-                labels.extend([class_id] * features_class.shape[0])
-            features = np.vstack(features)
-            labels = np.vstack(labels)
-            pca = PCA(n_components=2)
-            reduced_data = pca.fit_transform(features)
-            plt.figure(figsize=(10, 6))
-            for label in np.unique(new_classes):
-                indices = labels.flatten() == label
-                plt.scatter(reduced_data[indices, 0], reduced_data[indices, 1], label=f'Class {label+1}', s=10)
-            plt.legend() 
-            plt.savefig('2.png')
+            # =================Feature Space==================
+            # features = []
+            # labels = []
+            # for class_id in new_classes:
+            #     class_dataset = SubDataset(original_dataset=train_datasets[int(class_id/model.classes_per_context)], sub_labels=[class_id])
+            #     features_class = model.class_features(class_dataset).numpy()
+            #     features.append(features_class)
+            #     labels.extend([class_id] * features_class.shape[0])
+            # features = np.vstack(features)
+            # labels = np.vstack(labels)
+            # pca = PCA(n_components=2)
+            # reduced_data = pca.fit_transform(features)
+            # plt.figure(figsize=(10, 6))
+            # for label in np.unique(new_classes):
+            #     indices = labels.flatten() == label
+            #     plt.scatter(reduced_data[indices, 0], reduced_data[indices, 1], label=f'Class {label+1}', s=10)
+            # plt.legend() 
+            # plt.savefig('2.png')
 
             for class_id in new_classes:
                 # create new dataset containing only all examples of this class
