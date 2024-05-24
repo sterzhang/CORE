@@ -1,5 +1,5 @@
 # CORE: Mitigating Catastrophic Forgetting in Continual Learning through Cognitive Replay
-## COGSCI 2024 Oral
+(Accepted by COGSCI 2024 Oral)
 
 ## Framework
 ![image](figures/pipline.png)
